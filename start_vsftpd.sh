@@ -51,7 +51,7 @@ for i in $USERS ; do
 
   echo -e "$PASS\n$PASS" | adduser -h $FOLDER -s /sbin/nologin $GROUP_OPT $NAME
   # Force all users to have same UID
-  sed -i -E "s/$NAME:x:[0-9]+:/$NAME:x:$UID:/g"
+  sed -i -E "s/$NAME:x:[0-9]+:/$NAME:x:$UID:/g" /etc/passwd
   unset NAME PASS FOLDER UID GID
 done
 
