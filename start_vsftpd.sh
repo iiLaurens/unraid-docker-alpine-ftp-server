@@ -25,9 +25,9 @@ for i in $USERS ; do
   GROUP=$NAME
   PASS=$(echo $i | cut -d'|' -f2)
   FOLDER=$(echo $i | cut -d'|' -f3)
-  UID=$(echo $i | cut -d'|' -f4)
+  UID=99
   # Add group handling
-  GID=$(echo $i | cut -d'|' -f5)
+  GID=100
 
   if [ -z "$FOLDER" ]; then
     FOLDER="/ftp/$NAME"
@@ -49,9 +49,9 @@ for i in $USERS ; do
     fi
   fi
 
-  echo -e "$PASS\n$PASS" | adduser -h $FOLDER -s /sbin/nologin $UID_OPT $GROUP_OPT $NAME
-  mkdir -p $FOLDER
-  chown $NAME:$GROUP $FOLDER
+  echo -e "$PASS\n$PASS" | adduser -h $FOLDER -s /sbin/nologin $GROUP_OPT $NAME
+  # Force all users to have same UID
+  sed -i -E "s/$NAME:x:[0-9]+:/$NAME:x:$UID:/g"
   unset NAME PASS FOLDER UID GID
 done
 
