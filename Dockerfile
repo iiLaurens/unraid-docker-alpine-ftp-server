@@ -25,4 +25,8 @@ COPY vsftpd.conf /etc/vsftpd/vsftpd.conf
 EXPOSE 21 21000-21010
 VOLUME /ftp/ftp
 
+# Set unraid defaults for UID and GID
+ENV UID=99
+ENV GID=100
+
 ENTRYPOINT ["/sbin/tini", "--", "/bin/start_vsftpd.sh"]
