@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Remove all ftp users
-grep '/ftp/' /etc/passwd | cut -d':' -f1 | xargs -r -n1 deluser
+grep 'FTP User' /etc/passwd | cut -d':' -f1 | xargs -r -n1 deluser
 
 #Create users
 #USERS='name1|password1|[folder1][|uid1][|gid1] name2|password2|[folder2][|uid2][|gid2]'
@@ -25,34 +25,30 @@ for i in $USERS ; do
   GROUP=$NAME
   PASS=$(echo $i | cut -d'|' -f2)
   FOLDER=$(echo $i | cut -d'|' -f3)
-  UID=99
-  # Add group handling
-  GID=100
+  MAYBE_UID=$(echo $i | cut -d'|' -f4)
+  MAYBE_GID=$(echo $i | cut -d'|' -f5)
+  UID_=${MAYBE_UID:-$UID}
+  GID_=${MAYBE_GID:-$GID}
 
   if [ -z "$FOLDER" ]; then
     FOLDER="/ftp/$NAME"
   fi
 
-  if [ ! -z "$UID" ]; then
-    UID_OPT="-u $UID"
-    if [ -z "$GID" ]; then
-      GID=$UID
-    fi
-    #Check if the group with the same ID already exists
-    GROUP=$(getent group $GID | cut -d: -f1)
-    if [ ! -z "$GROUP" ]; then
-      GROUP_OPT="-G $GROUP"
-    elif [ ! -z "$GID" ]; then
-      # Group don't exist but GID supplied
-      addgroup -g $GID $NAME
-      GROUP_OPT="-G $NAME"
-    fi
+  #Check if the group with the same ID already exists
+  GROUP=$(getent group $GID_ | cut -d: -f1)
+  if [ ! -z "$GROUP" ]; then
+    GROUP_OPT="-G $GROUP"
+  elif [ ! -z "$GID_" ]; then
+    # Group don't exist but GID supplied
+    addgroup -g $GID_ $NAME
+    GROUP_OPT="-G $NAME"
   fi
 
-  echo -e "$PASS\n$PASS" | adduser -h $FOLDER -s /sbin/nologin $GROUP_OPT $NAME
-  # Force all users to have same UID
-  sed -i -E "s/$NAME:x:[0-9]+:/$NAME:x:$UID:/g" /etc/passwd
-  unset NAME PASS FOLDER UID GID
+  echo -e "$PASS\n$PASS" | adduser -h $FOLDER -s /sbin/nologin -g "FTP User" $GROUP_OPT $NAME
+  
+  # Change UID used SED to avoid uid conflict error message
+  sed -i -E "s/$NAME:x:[0-9]+:/$NAME:x:$UID_:/g" /etc/passwd
+  unset NAME PASS FOLDER GROUP UID_ GID_
 done
 
 
