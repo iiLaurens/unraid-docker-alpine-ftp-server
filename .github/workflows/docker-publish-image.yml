@@ -15,7 +15,7 @@ on:
 
 env:
   # Image name at docker hub
-  IMAGE_NAME: delfer/alpine-ftp-server
+  IMAGE_NAME: ilaurens/unraid-alpine-ftp-server
 
 jobs:
   # Run tests.
@@ -67,11 +67,11 @@ jobs:
           echo "LABEL org.label-schema.build-date=$TIME_ISO" >> Dockerfile
           echo "LABEL org.label-schema.name=vsftpd" >> Dockerfile
           echo "LABEL org.label-schema.url=https://security.appspot.com/vsftpd.html" >> Dockerfile
-          echo "LABEL org.label-schema.vcs-url=https://github.com/delfer/docker-alpine-ftp-server" >> Dockerfile
+          echo "LABEL org.label-schema.vcs-url=https://github.com/ilaurens/unraid-docker-alpine-ftp-server" >> Dockerfile
           GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
           echo "LABEL org.label-schema.vcs-ref=$GIT_HASH" >> Dockerfile
           echo "LABEL org.label-schema.schema-version=1.0.0-rc.1" >> Dockerfile
-          echo "LABEL org.label-schema.docker.cmd=\"docker run -d -p 21:21 -e USERS=\"username|password\" delfer/alpine-ftp-server\"" >> Dockerfile
+          echo "LABEL org.label-schema.docker.cmd=\"docker run -d -p 21:21 -e USERS=\"username|password\" ilaurens/unraid-alpine-ftp-server\"" >> Dockerfile
           # Show edited Dockerfile content
           cat Dockerfile
                     
